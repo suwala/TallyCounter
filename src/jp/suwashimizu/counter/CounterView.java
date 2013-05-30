@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -18,6 +19,8 @@ import android.view.SurfaceView;
 import android.view.View;
 
 public class CounterView extends SurfaceView implements SurfaceHolder.Callback,Runnable{
+
+	private static final String TAG = "surface";
 
 	private Paint paint;
 	private int[] myCounts;
@@ -29,7 +32,8 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 	private SurfaceHolder mHolder;
 	private float textY;
 	private CounterDrum counter;
-	private List<Boolean>countPool;
+	private Rect[] dsts;
+	private Rect[] srcs;
 
 	public CounterView(Context context, AttributeSet attrs) {
 		super(context,attrs);
@@ -44,7 +48,6 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(100);
 		myCounts = new int[]{0,0,0,0,0};
-		countPool = new ArrayList<Boolean>();
 	}
 
 	public void setCounter(CounterDrum _counter){
@@ -53,12 +56,13 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 	public void setCount(){
 
+		myCount = counter.getCount();
+
+
 		if(thread == null){
 			thread = new Thread(this);
 			thread.start();
 		}
-
-
 	}
 
 	//画面回転
@@ -74,7 +78,7 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 		Canvas canvas = null;
 		try{
 			canvas = holder.lockCanvas();
-			canvas.drawColor(Color.RED);
+			canvas.drawColor(Color.BLACK);
 
 			int w = canvas.getWidth()/5;
 			int h = canvas.getHeight();
@@ -86,7 +90,11 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 			FontMetrics fontMetrics = paint.getFontMetrics();
 			textY = baseY - (fontMetrics.ascent - fontMetrics.descent)/2;
 			if(drums == null){
-				drums = new Bitmap[5];
+
+				dsts = new Rect[counter.getLength()];
+				srcs = new Rect[counter.getLength()];
+
+				drums = new Bitmap[counter.getLength()];
 				for(int i=0;i<drums.length;i++){
 
 					drums[i] = Bitmap.createBitmap(w, h*11, Config.ARGB_8888);
@@ -95,12 +103,17 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 						dCanvas.drawText(String.valueOf(j!=1?11-j:0), 0, h*j+h - textY, paint);
 					}
 
+					//srcs[i] = new Rect(0,height*10,w,height*10+h);
+					srcs[i] = new Rect(0, height *10 - height * myCounts[i], drumOneWidth, height *10 -height * myCounts[i] +height);
+					dsts[i] = new Rect(w*i,(int)(0+height-textY),w*i+w,(int)(h+height-textY));
 
 				}
 			}
 			for(int i=0;i<drums.length;i++){
 				//				canvas.drawBitmap(drums[i], i*w,(-height * 10) + height*0 + h - textY, null);
-				canvas.drawBitmap(drums[i], i*drumOneWidth, (-height * 9) + height*myCounts[i] - textY , null);
+				Log.d(TAG,""+myCounts[i]);
+				//canvas.drawBitmap(drums[i], i*drumOneWidth, (-height * 9) + height*myCounts[i] - textY , null);
+				canvas.drawBitmap(drums[i], srcs[i], dsts[i], null);
 			}
 		}finally{
 			if(canvas != null)
@@ -113,6 +126,19 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		thread = null;
 	}
+	/*
+	 * アニメは固定長ループ
+	 * 固定長はドラムViewの高さ分で１ループ（数字1文字分）
+	 * 
+	 *Rect[]で現在値比較してadd subを決める
+	 * 
+	 *	 
+	 */
+
+
+	//末尾以外でカウントがずれるバグあり
+	private int[] h=new int[5];
+	static final int velocity = 20;
 
 	@Override
 	public synchronized void run() {
@@ -120,76 +146,154 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 		Canvas canvas=null;
 
-		Matrix matrix = new Matrix();
-		int[] h=new int[]{0,0,0,0,0};
-		int velocity;
+		boolean countMath=false;
+		int count=0;
+		int lastCount=0;
 
-		while(thread != null){
-			if(myCount == counter.getCount())
-				break;
-
-			//			for(int i=0;i<counter.getLength();i++)
-			//				myCounts[i] = counter.getDigits(i);
-
-
-			boolean isAdd;
-			if(myCount < counter.getCount()){
-				isAdd = true;
-				velocity=20;
-			}else{
-				isAdd = false;
-				velocity=-20;
-			}
-
-			//5桁分分離して表示
+		while(thread != null && !countMath){
 			try{
+				//while(!countMath){
+				countMath = true;
 				canvas = mHolder.lockCanvas();
 				if(canvas != null){
-					canvas.drawColor(Color.RED);
 
+					canvas.drawColor(Color.BLACK);
+					//poolから取りに行ってるのに同じ桁をチェックしてたので修正 先頭～末尾の手前までチェック
+					for(int i=0;i<drums.length-1;i++){
 
-					for(int i=0;i<drums.length;i++){
-						//canvas.drawBitmap(drums[i], (i)*drumOneWidth, (-height * 9) + height*myCounts[i] + h[i] - textY , null);
-						//桁毎に確認 0=先頭取得
-						if(myCounts[i] != counter.getDigits(i)){
-							//Log.d("myCount:counter",""+myCounts[i]+":"+counter.getDigits(i));
+						//桁毎にマッチしてるか View側の桁数 なぜ毎回取りに行くのか
+						int countDigit = counter.getDigits(i);
+
+						//位置がわかる 0が2つある点に注意
+						double viewDigit =  (double)((height * 10 - srcs[i].top)) / height;
+						if(viewDigit == 10)
+							viewDigit = 0;
+
+//						if(i == 3)
+//							Log.d(TAG,""+srcs[i].top);
+
+						//ここから
+						if(viewDigit != countDigit){
+							countMath = false;
+							//9 -> or <- 0のとき不具合あり
+							//setした時Poolがないので不具合あり
+							count = viewDigit < countDigit?1:-1;
+
+							if((int)viewDigit == 9 && countDigit == 0 && count == -1){
+								count = 1;
+								srcs[i].set(0, height * 10, drumOneWidth, height * 10 +height);
+							}
+							if((int)viewDigit == 0 && countDigit == 9 && count == 1){
+								srcs[i].set(0, 0, drumOneWidth, height);
+								count = -1;
+							}
+
+							srcs[i].offset(0, velocity * -count);
 							h[i] += velocity;
-							canvas.drawBitmap(drums[i], i*drumOneWidth, (-height * 9) + height*myCounts[i] + h[i] - textY , null);
-							if( h[i] > height || h[i] < -height){
+
+							//9Over
+							//							if(srcs[i].top < 0){
+							//								srcs[i].set(0, height * 10, drumOneWidth, height * 10 +height);
+							//
+							/*}
+							if(srcs[i].top < 0){
+								srcs[i].set(0, height * 10, drumOneWidth, height * 10 +height);
+							}
+							//0Less
+							else if(srcs[i].top > height * 10){
+								srcs[i].set(0, 0, drumOneWidth, height);
+							}
+							*/
+
+							if(h[i] >= height){
 
 								h[i] = 0;
-								myCounts[i] += isAdd == true?1:-1;
+								myCounts[i] += count;
+								srcs[i].set(0, height *10 - height * myCounts[i], drumOneWidth, height *10 -height * myCounts[i] +height);
+
 								if(myCounts[i] > 9)
 									myCounts[i] = 0;
 								if(myCounts[i] < 0)
 									myCounts[i] = 9;
 
-
-								if(i == 4)
-									myCount += isAdd == true?1:-1;
 							}
-						}else{
-							canvas.drawBitmap(drums[i], i*drumOneWidth, (-height * 9) + height*myCounts[i] + h[i] - textY , null);
+						}
+						//ここまでアニメ処理
+						canvas.drawBitmap(drums[i], srcs[i], dsts[i], null);
+					}//先頭4桁ループ終わり
+
+
+					//末尾ループ
+
+					//Poolなし
+//					 = counter.getPool();
+					if(lastCount == 0){
+						lastCount = counter.getPool();
+						double myDigit =  (height * 10 - srcs[4].top) /(double)height;
+						int _d = counter.getDigits(4);
+						if(myDigit != _d){
+							lastCount = myDigit < _d?1:-1;
+
+							if(myDigit == 9 && _d == 0)
+								lastCount = 1;
+							if(myDigit == 0 && _d == 9)
+								lastCount = -1;
 						}
 					}
 
-//					for(int i=0;i<drums.length;i++){
-//						//49 > 59 > 50 となる時がある原因調査
-//						Log.d("ccc",""+myCounts[4-i]*Math.pow(10, i));
-//						myCount += myCounts[4-i]*Math.pow(10, i);
-//					}
-					
-					Log.d("counter:myCount",""+counter.getCount()+":"+myCount);
-					Thread.sleep(10);
+					if(lastCount != 0){
+						countMath = false;
+
+						//一番下でSubの時Topへ移動
+//						if(srcs[4].top > height * 10 && lastCount < 0)
+//							srcs[4].set(0, 0, drumOneWidth, +height);
+						
+						//9Over
+						if(srcs[4].top < 0){
+							srcs[4].set(0, height * 10, drumOneWidth, height * 10 +height);
+						}
+						//0Less
+						else if(srcs[4].top > height * 10){
+							srcs[4].set(0, height, drumOneWidth, height+height);
+						}
+
+						srcs[4].offset(0, -velocity * lastCount);
+						h[4] += velocity;
+						
+						if(h[4] >= height){
+							h[4] = 0;
+							myCounts[4] += lastCount;
+
+							if(myCounts[4] > 9)
+								myCounts[4] = 0;
+							if(myCounts[4] < 0)
+								myCounts[4] = 9;
+
+							lastCount = counter.getPool();
+							srcs[4].set(0, height *10 - height * myCounts[4], drumOneWidth, height *10 -height * myCounts[4] +height);
+							
+//							//9Over
+//							if(srcs[4].top < 0){
+//								srcs[4].set(0, height * 10, drumOneWidth, height * 10 +height);
+//							}
+//							//0Less
+//							else if(srcs[4].top > height * 10){
+//								srcs[4].set(0, height, drumOneWidth, height+height);
+//							}
+						}
+					}
+					canvas.drawBitmap(drums[4], srcs[4], dsts[4], null);
+
+					//mHolder.unlockCanvasAndPost(canvas);
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				//}
 			}finally{
 				if(canvas != null){
 					mHolder.unlockCanvasAndPost(canvas);
 				}
 			}
 		}
+		Log.d("counter:myCount",""+counter.getCount()+":"+myCount);
 		thread = null;
 	}
 }
