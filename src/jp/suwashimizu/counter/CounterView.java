@@ -139,6 +139,7 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 	//末尾以外でカウントがずれるバグあり
 	private int[] h=new int[5];
 	static final int velocity = 20;
+	private int[] updown = new int[5];
 
 	@Override
 	public synchronized void run() {
@@ -159,8 +160,33 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 					canvas.drawColor(Color.BLACK);
 					//poolから取りに行ってるのに同じ桁をチェックしてたので修正 先頭～末尾の手前までチェック
+					
+					
+					//桁の差を求める
 					for(int i=0;i<drums.length-1;i++){
-
+						int countDigit = counter.getDigits(i);
+						int viewDigit =  (height * 10 - srcs[i].top) / height;
+						if(viewDigit == 10)
+							viewDigit = 0;
+						
+						if(viewDigit != countDigit){
+							updown[i] = viewDigit < countDigit?1:-1;
+							
+							if(viewDigit == 9 && countDigit == 0){
+								count = 1;
+								srcs[i].set(0, height * 10, drumOneWidth, height * 10 +height);
+							}
+							if(viewDigit == 0 && countDigit == 9){
+								srcs[i].set(0, 0, drumOneWidth, height);
+								count = -1;
+							}
+						}else
+							updown[i] = 0;
+					}
+					
+					
+					for(int i=0;i<drums.length-1;i++){
+/*
 						//桁毎にマッチしてるか View側の桁数 なぜ毎回取りに行くのか
 						int countDigit = counter.getDigits(i);
 
@@ -168,25 +194,15 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 						double viewDigit =  (double)((height * 10 - srcs[i].top)) / height;
 						if(viewDigit == 10)
 							viewDigit = 0;
-
-//						if(i == 3)
-//							Log.d(TAG,""+srcs[i].top);
-
+				*/		
+						
+						
 						//ここから
-						if(viewDigit != countDigit){
+						if(updown[i] != 0){
 							countMath = false;
 							//9 -> or <- 0のとき不具合あり
 							//setした時Poolがないので不具合あり
-							count = viewDigit < countDigit?1:-1;
-
-							if((int)viewDigit == 9 && countDigit == 0 && count == -1){
-								count = 1;
-								srcs[i].set(0, height * 10, drumOneWidth, height * 10 +height);
-							}
-							if((int)viewDigit == 0 && countDigit == 9 && count == 1){
-								srcs[i].set(0, 0, drumOneWidth, height);
-								count = -1;
-							}
+							count = updown[i];
 
 							srcs[i].offset(0, velocity * -count);
 							h[i] += velocity;
