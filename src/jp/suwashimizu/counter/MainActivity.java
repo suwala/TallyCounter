@@ -60,11 +60,14 @@ public class MainActivity extends SherlockActivity implements TabListener{
 		actionBar.addTab(actionBar.newTab().setText("Tab2").setTabListener(this));		
 		actionBar.addTab(actionBar.newTab().setText("Tab2").setTabListener(this));			
 	}
+	
+	
 
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		mCounter.setCount(tab.getPosition()*1000);
-		mView.setCount();
+		if(mView.isCreate)
+			mView.setCount();
 	}
 
 	@Override
