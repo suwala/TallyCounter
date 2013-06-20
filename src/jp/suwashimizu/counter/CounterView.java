@@ -1,7 +1,5 @@
 package jp.suwashimizu.counter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,7 +9,6 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
@@ -19,7 +16,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 public class CounterView extends SurfaceView implements SurfaceHolder.Callback,Runnable{
 
@@ -28,7 +24,7 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 	private Paint paint;
 	private int[] myCounts;
 	private int myCount;
-	private Bitmap[] drums;
+	private Bitmap drums;
 	private int height;
 	private int drumOneWidth;
 	private SurfaceHolder mHolder;
@@ -38,8 +34,9 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 	private Rect[] srcs;
 	private Bitmap backImg;
 	
-	
 	public boolean isCreate;
+	
+	private boolean isDestroy;
 
 	private ExecutorService animeExe = Executors.newFixedThreadPool(1);
 
@@ -69,23 +66,25 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 	}
 
-	//画面回転
+	//画面回転Resumeでやっぱ呼ばれる
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,int height) {
-
+		Log.d(TAG,"change!");
+		
 	}
 
 	//Resumeでも呼ばれる
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-
+		Log.d(TAG,"created!");
+		isDestroy = false;
 		Canvas canvas = null;
 		try{
 			canvas = holder.lockCanvas();
-			canvas.drawColor(Color.BLACK);
-
-			int w = 620/5;//canvas.getWidth()/5 - 10;
-			int h = 150;//canvas.getHeight();
+			canvas.drawColor(Color.DKGRAY);
+			
+			int w = (int) (canvas.getWidth()*0.75 / 5) ;
+			int h =(int) (canvas.getWidth() / 4.5) ;//canvas.getHeight();
 			height = h;
 			drumOneWidth = w;
 			paint.setTextSize(h);
@@ -100,28 +99,37 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 				dsts = new Rect[counter.getLength()];
 				srcs = new Rect[counter.getLength()];
+				
+				drums = Bitmap.createBitmap(w, h*11, Config.ARGB_8888);
+				Canvas dCanvas = new Canvas(drums);
+				for(int j=11;j>0;j--){//(h -j*h)+h+h-textY
+					dCanvas.drawText(String.valueOf(j!=1?11-j:0), 0, h*j+h - textY, paint);
+				}
+				
+				for(int i=0;i<counter.getLength();i++){
 
-				drums = new Bitmap[counter.getLength()];
-				for(int i=0;i<drums.length;i++){
-
-					drums[i] = Bitmap.createBitmap(w, h*11, Config.ARGB_8888);
-					Canvas dCanvas = new Canvas(drums[i]);
-					for(int j=11;j>0;j--){//(h -j*h)+h+h-textY
-						dCanvas.drawText(String.valueOf(j!=1?11-j:0), 0, h*j+h - textY, paint);
-					}
-
-					//srcs[i] = new Rect(0,height*10,w,height*10+h);
-					srcs[i] = new Rect(0, height *10 - height * myCounts[i], drumOneWidth, height *10 -height * myCounts[i] +height);
-					dsts[i] = new Rect(50+w*i,(int)(0+height-textY)+100,50+w*i+w,(int)(h+height-textY)+100);
+					//srcs[i] = new Rect(0, height *10 - height * myCounts[i], drumOneWidth, height *10 -height * myCounts[i] +height);
+					
+					//マージンを取るよ
+					dsts[i] = new Rect((int)(canvas.getWidth()*0.13+w*i),(int)(0+height-textY)+(int)(height*0.5f),
+							(int)(canvas.getWidth()*0.13)+w*i+w,(int)(h+height-textY)+(int)(height*0.5f));
 
 				}
 			}
-			for(int i=0;i<drums.length;i++){
+			
+			canvas.drawBitmap(backImg,0,0, null);
+			
+			for(int i=0;i<counter.getLength();i++){
+				srcs[i] = new Rect(0, height *10 - height * myCounts[i], drumOneWidth, height *10 -height * myCounts[i] +height);
+			}
+			
+			
+			for(int i=0;i<counter.getLength();i++){
 				//				canvas.drawBitmap(drums[i], i*w,(-height * 10) + height*0 + h - textY, null);
-				Log.d(TAG,""+myCounts[i]);
+				//Log.d(TAG,""+myCounts[i]);
 				//canvas.drawBitmap(drums[i], i*drumOneWidth, (-height * 9) + height*myCounts[i] - textY , null);
-				canvas.drawBitmap(backImg,0,0, null);
-				canvas.drawBitmap(drums[i], srcs[i], dsts[i], null);
+				
+				canvas.drawBitmap(drums, srcs[i], dsts[i], null);
 			}
 		}finally{
 			if(canvas != null)
@@ -129,12 +137,14 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 		}
 
 		isCreate = true;
+		setCount();
 	}
 
 	//pausedでも呼ばれる
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-
+		Log.d(TAG,"destroy!");
+		isDestroy = true;
 	}
 	/*
 	 * アニメは固定長ループ
@@ -161,12 +171,12 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 		countMath = true;
 
 		//桁の先頭から取りに行く
-		for(int i=0;i<drums.length-1;i++){
+		for(int i=0;i<counter.getLength()-1;i++){
 			//カウンタから取得
 			int countDigit = counter.getDigits(i);
 			//Viewのカウンタ取得
 			int viewDigit =  (height * 10 - srcs[i].top) / height;
-
+			
 			//10はあり得るか？
 			if(viewDigit == 10)
 				viewDigit = 0;
@@ -193,15 +203,17 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 		//末尾
 		lastCount = counter.getPool();
-		Log.d(TAG+"1",""+lastCount);
+		//Log.d(TAG+"1",""+lastCount);
 		if(lastCount != 0){
 
 			countMath = false;
 
-			int myDigit =  (height * 10 - srcs[4].top) /height;
+			int myDigit =  (height * 10 - srcs[4].top) / height;
+			//Log.d(TAG+"1",""+srcs[4].top);
 			int _d = counter.getDigits(4);
 			if(myDigit != _d){
 				countMath = false;
+				
 				//lastCount = myDigit < _d?1:-1;
 
 //				if(myDigit == 9 && _d == 0)
@@ -216,6 +228,7 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 		}
 
 		if(lastCount == 0){
+			//Log.d(TAG+"2",""+srcs[4].top);
 			int myDigit =  (height * 10 - srcs[4].top) /height;
 			int _d = counter.getDigits(4);
 			if(myDigit != _d){
@@ -232,9 +245,8 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 //				}
 			}
 		}
-		Log.d(TAG+"2",""+lastCount);
 		updown[4] = lastCount;
-		if(!countMath){
+		if(!countMath && !isDestroy){
 			animationLoop();
 			animeExe.execute(this);
 		}
@@ -247,14 +259,16 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 		int moveCount=0;
 
 		//1ループ
-		while(moveCount <= height){
+		while(moveCount < height && !isDestroy){
 
 			Canvas canvas = null;
 			canvas = mHolder.lockCanvas();
 
 			if(canvas != null){
-				canvas.drawColor(Color.BLACK);
-				for(int i=0;i<drums.length;i++){
+				canvas.drawColor(Color.DKGRAY);
+				moveCount += velocity;
+				
+				for(int i=0;i<counter.getLength();i++){
 
 					//先頭～
 					if(updown[i] != 0){
@@ -278,14 +292,14 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 							if(myCounts[i] < 0)
 								myCounts[i] = 9;
 
-							srcs[i].set(0, height *10 - height * myCounts[i], 
-									drumOneWidth, height *10 -height * myCounts[i] +height);						
+							srcs[i].set(0, height*10-myCounts[i] * height, 
+									drumOneWidth, height*10-myCounts[i] * height+height);						
+							//Log.d(TAG+"3",""+srcs[4].top);
 						}
 					}
-					canvas.drawBitmap(backImg,0,0, null);
-					canvas.drawBitmap(drums[i], srcs[i], dsts[i], null);
+					canvas.drawBitmap(drums, srcs[i], dsts[i], null);
 				}
-				moveCount += velocity;
+				canvas.drawBitmap(backImg,0,0, null);
 				mHolder.unlockCanvasAndPost(canvas);
 			}
 		}

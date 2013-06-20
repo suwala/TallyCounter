@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:drawable="@drawable/memory_btn_on_draw"
+    android:insetLeft="@dimen/clear_btn_mergin"
+    android:insetRight="@dimen/clear_btn_mergin"
+    android:insetTop="@dimen/clear_btn_mergin"
+    android:insetBottom="@dimen/clear_btn_mergin">
+
+</inset>

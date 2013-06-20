@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"  android:shape="oval">
+     <stroke android:color="@color/btn_memory_storke"
+        android:width="@dimen/clear_btn_stroke"/>
+    <gradient 
+        android:startColor="@color/btn_memory_grade_2"
+        android:endColor="@color/btn_memory_grade_3"
+        android:type="linear"
+        android:angle="90"/>
+</shape>

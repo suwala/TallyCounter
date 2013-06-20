@@ -1,7 +1,27 @@
 <resources>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
+    <dimen name="add_btn_width">110dp</dimen>
+    <dimen name="add_btn_text_size">65sp</dimen>
+    <dimen name="add_btn_stroke">6dp</dimen>
+    
+    <dimen name="sub_btn_width">80dp</dimen>
+    <dimen name="sub_btn_text_size">40sp</dimen>
+    <dimen name="sub_btn_merge">15dp</dimen>
+    <dimen name="clear_btn_size">40dp</dimen>
+    <dimen name="clear_btn_stroke">3dp</dimen>
+    <dimen name="clear_btn_mergin">2dp</dimen>
+	<dimen name="add_btn_mergin">4dp</dimen>
+	<dimen name="add_bnt_reletive_mergin">30dp</dimen>
+	
+	<dimen name="add_btn_on">25dp</dimen>
+	
+	
+	<dimen name="add_btn_layout_mergin">130dp</dimen>
+	
+	<dimen name="left_btns_mergin">20dp</dimen>
+	<dimen name="left_btns_mergin_r">30dp</dimen>
+	
+	<dimen name="memory_btn_size">50dp</dimen>
+	
 </resources>

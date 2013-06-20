@@ -1,0 +1,30 @@
+<resources>
+
+    <!--
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw600dp devices (e.g. 7" tablets) here.
+    -->
+
+    <dimen name="add_btn_width">124dp</dimen>
+    <dimen name="add_btn_text_size">73sp</dimen>
+    <dimen name="add_btn_stroke">7dp</dimen>
+    
+    <dimen name="sub_btn_width">90dp</dimen>
+    <dimen name="sub_btn_text_size">45sp</dimen>
+    <dimen name="sub_btn_merge">17dp</dimen>
+    <dimen name="clear_btn_size">45dp</dimen>
+    <dimen name="clear_btn_stroke">4dp</dimen>
+    <dimen name="clear_btn_mergin">3dp</dimen>
+	<dimen name="add_btn_mergin">5dp</dimen>
+	<dimen name="add_bnt_reletive_mergin">34dp</dimen>
+	
+	<dimen name="add_btn_on">28dp</dimen>
+	
+	
+	<dimen name="add_btn_layout_mergin">146dp</dimen>
+	
+	<dimen name="left_btns_mergin">23dp</dimen>
+	<dimen name="left_btns_mergin_r">34dp</dimen>
+	
+	<dimen name="memory_btn_size">56dp</dimen>
+</resources>

@@ -686,10 +686,19 @@ containing a value of this type.
         public static final int abs__bright_foreground_disabled_holo_light=0x7f060005;
         public static final int abs__bright_foreground_holo_dark=0x7f060002;
         public static final int abs__bright_foreground_holo_light=0x7f060003;
-        public static final int abs__primary_text_disable_only_holo_dark=0x7f060006;
-        public static final int abs__primary_text_disable_only_holo_light=0x7f060007;
-        public static final int abs__primary_text_holo_dark=0x7f060008;
-        public static final int abs__primary_text_holo_light=0x7f060009;
+        public static final int abs__primary_text_disable_only_holo_dark=0x7f06000f;
+        public static final int abs__primary_text_disable_only_holo_light=0x7f060010;
+        public static final int abs__primary_text_holo_dark=0x7f060011;
+        public static final int abs__primary_text_holo_light=0x7f060012;
+        public static final int btn_center=0x7f060006;
+        public static final int btn_clear_grade_2=0x7f06000a;
+        public static final int btn_clear_grade_3=0x7f06000b;
+        public static final int btn_clear_stroke=0x7f060009;
+        public static final int btn_memory_grade_2=0x7f06000d;
+        public static final int btn_memory_grade_3=0x7f06000e;
+        public static final int btn_memory_storke=0x7f06000c;
+        public static final int btn_out=0x7f060007;
+        public static final int btn_stroke=0x7f060008;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -788,14 +797,38 @@ containing a value of this type.
         /**  Minimum width of the search view text entry area. 
          */
         public static final int abs__search_view_text_min_width=0x7f07000b;
-        /**  Default screen margins, per the Android Design guidelines. 
-
+        /** 
          Customize dimensions originally defined in res/values/dimens.xml (such as
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f07000f;
-        public static final int activity_vertical_margin=0x7f070010;
+        public static final int activity_horizontal_margin=0x7f07001f;
+        public static final int add_bnt_reletive_mergin=0x7f070019;
+        public static final int add_btn_layout_mergin=0x7f07001b;
+        public static final int add_btn_mergin=0x7f070018;
+        public static final int add_btn_on=0x7f07001a;
+        public static final int add_btn_stroke=0x7f070011;
+        public static final int add_btn_text_size=0x7f070010;
+        /**  Default screen margins, per the Android Design guidelines. 
+
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw600dp devices (e.g. 7" tablets) here.
+    
+
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw600dp devices (e.g. 7" tablets) here.
+    
+         */
+        public static final int add_btn_width=0x7f07000f;
+        public static final int clear_btn_mergin=0x7f070017;
+        public static final int clear_btn_size=0x7f070015;
+        public static final int clear_btn_stroke=0x7f070016;
+        public static final int left_btns_mergin=0x7f07001c;
+        public static final int left_btns_mergin_r=0x7f07001d;
+        public static final int memory_btn_size=0x7f07001e;
+        public static final int sub_btn_merge=0x7f070014;
+        public static final int sub_btn_text_size=0x7f070013;
+        public static final int sub_btn_width=0x7f070012;
     }
     public static final class drawable {
         public static final int abs__ab_bottom_solid_dark_holo=0x7f020000;
@@ -910,10 +943,24 @@ containing a value of this type.
         public static final int abs__textfield_searchview_right_holo_dark=0x7f02006d;
         public static final int abs__textfield_searchview_right_holo_light=0x7f02006e;
         public static final int abs__toast_frame=0x7f02006f;
-        public static final int ic_launcher=0x7f020070;
+        public static final int add_btn=0x7f020070;
+        public static final int add_btn_off=0x7f020071;
+        public static final int add_btn_on=0x7f020072;
+        public static final int add_btn_on_draw=0x7f020073;
+        public static final int clear_btn=0x7f020074;
+        public static final int clear_btn_off=0x7f020075;
+        public static final int clear_btn_on=0x7f020076;
+        public static final int clear_btn_on_draw=0x7f020077;
+        public static final int ic_launcher=0x7f020078;
+        public static final int ic_menu_moreoverflow_normal_holo_light=0x7f020079;
+        public static final int memory_btn=0x7f02007a;
+        public static final int memory_btn_off=0x7f02007b;
+        public static final int memory_btn_on=0x7f02007c;
+        public static final int memory_btn_on_draw=0x7f02007d;
+        public static final int rect4006=0x7f02007e;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f040032;
+        public static final int RelativeLayout1=0x7f040032;
         public static final int abs__action_bar=0x7f040020;
         public static final int abs__action_bar_container=0x7f04001f;
         public static final int abs__action_bar_subtitle=0x7f040011;
@@ -955,16 +1002,22 @@ containing a value of this type.
         public static final int abs__up=0x7f04000b;
         public static final int button1=0x7f040034;
         public static final int button2=0x7f040035;
+        public static final int button3=0x7f040037;
+        public static final int button4=0x7f040038;
+        public static final int button5=0x7f040039;
         public static final int counterView1=0x7f040033;
         public static final int disableHome=0x7f040009;
+        public static final int editText1=0x7f04003a;
         public static final int edit_query=0x7f040026;
         public static final int homeAsUp=0x7f040006;
         public static final int listMode=0x7f040002;
         public static final int normal=0x7f040001;
+        public static final int setting=0x7f04003c;
         public static final int showCustom=0x7f040008;
         public static final int showHome=0x7f040005;
         public static final int showTitle=0x7f040007;
         public static final int tabMode=0x7f040003;
+        public static final int tab_edit=0x7f04003b;
         public static final int textView1=0x7f040036;
         public static final int useLogo=0x7f040004;
         public static final int wrap_content=0x7f040000;
@@ -995,8 +1048,14 @@ containing a value of this type.
         public static final int abs__search_view=0x7f030013;
         public static final int abs__simple_dropdown_hint=0x7f030014;
         public static final int activity_main=0x7f030015;
-        public static final int sherlock_spinner_dropdown_item=0x7f030016;
-        public static final int sherlock_spinner_item=0x7f030017;
+        public static final int edit_tab_view=0x7f030016;
+        public static final int list_activity=0x7f030017;
+        public static final int list_item=0x7f030018;
+        public static final int sherlock_spinner_dropdown_item=0x7f030019;
+        public static final int sherlock_spinner_item=0x7f03001a;
+    }
+    public static final class menu {
+        public static final int main_menu=0x7f0b0000;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1040,7 +1099,9 @@ containing a value of this type.
         public static final int abs__shareactionprovider_share_with_application=0x7f090007;
         public static final int action_settings=0x7f09000e;
         public static final int app_name=0x7f09000d;
-        public static final int hello_world=0x7f09000f;
+        public static final int btn_clear=0x7f090011;
+        public static final int btn_memory=0x7f090010;
+        public static final int btn_reset=0x7f09000f;
     }
     public static final class style {
         /** 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <color name="btn_center">#999999</color>
+    <color name="btn_out">#b5b5b5</color>
+     <color name="btn_stroke">#909090</color>
+    
+     <color name="btn_clear_stroke">#712929</color>
+    <color name="btn_clear_grade_2">#923535</color>
+    <color name="btn_clear_grade_3">#592020</color>
+    
+    <color name="btn_memory_storke">#206c2c</color>
+    <color name="btn_memory_grade_2">#298c39</color>
+    <color name="btn_memory_grade_3">#20592f</color>
+    
+</resources>
