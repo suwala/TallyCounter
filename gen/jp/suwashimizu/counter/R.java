@@ -1102,6 +1102,9 @@ containing a value of this type.
         public static final int btn_clear=0x7f090011;
         public static final int btn_memory=0x7f090010;
         public static final int btn_reset=0x7f09000f;
+        public static final int intent_label=0x7f090014;
+        public static final int intent_list=0x7f090012;
+        public static final int intent_total=0x7f090013;
     }
     public static final class style {
         /** 

@@ -6,4 +6,8 @@
     <string name="btn_reset">R</string>
     <string name="btn_memory">M</string>
 	<string name="btn_clear">C</string>
+	
+	<string name="intent_list">list</string>
+	<string name="intent_total">total</string>
+	<string name="intent_label">label</string>
 </resources>

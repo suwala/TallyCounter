@@ -21,9 +21,10 @@ import android.widget.TextView;
 public class MemoryListActivity extends SherlockListActivity{
 
 
-	//Listの実装　出力の実装　終わり？
+	//Listの実装　出力の実装　終わり？ 折り畳みにしよう
 
 	private MyAdapter mAdapter;
+	private String[] labels;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,18 +51,29 @@ public class MemoryListActivity extends SherlockListActivity{
 			}
 		}
 		 */
-
-		ArrayList<Integer> list = (ArrayList<Integer>)getIntent().getSerializableExtra("list1");
-		Integer[] countList = new Integer[list.size()+1];
+		labels = new String[MainActivity.TAB_LIMIT];
+		int total = getIntent().getIntExtra(getString(R.string.intent_total), 0);
+		Integer[] countList = new Integer[total+3];
 		int count = 0;
-		countList[count++] = -1;
-		for(int c:list){
-			countList[count++] = c;
+		
+		for(int i=0;i<MainActivity.TAB_LIMIT;i++){
+
+			countList[count++] = -(i+1);
+			ArrayList<Integer> list = (ArrayList<Integer>)getIntent().getSerializableExtra(getString(R.string.intent_list)+i);
+			for(int c:list){
+				countList[count++] = c;
+			}
+			
+			labels[i] = getIntent().getStringExtra(getString(R.string.intent_label)+i);
 		}
+		
+		/*
+		
+		
 		
 		list = (ArrayList<Integer>)getIntent().getSerializableExtra("list2");
 		
-		countList[count++] = -1;
+		
 		for(int c:list){
 			countList[count++] = c;
 		}
@@ -71,7 +83,7 @@ public class MemoryListActivity extends SherlockListActivity{
 		for(int c:list){
 			countList[count++] = c;
 		}
-		
+		*/
 		mAdapter = new MyAdapter(this, R.layout.list_item, countList);
 		setListAdapter(mAdapter);
 
@@ -120,7 +132,7 @@ public class MemoryListActivity extends SherlockListActivity{
 
 			int count = countList[position];
 			if(!isEnabled(position)){
-				holder.count.setText(null);
+				holder.count.setText(labels[-getItem(position)-1]);
 				convertView.setBackgroundColor(Color.LTGRAY);
 			}else{
 				holder.count.setText(String.valueOf(count));
@@ -134,7 +146,7 @@ public class MemoryListActivity extends SherlockListActivity{
 		public boolean isEnabled(int position) {
 			int c = getItem(position);
 			Log.d("LIST",""+c);
-			return getItem(position) == -1? false:true;
+			return getItem(position) < 0? false:true;
 		}
 	}
 

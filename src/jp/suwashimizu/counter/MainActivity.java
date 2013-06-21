@@ -51,8 +51,9 @@ public class MainActivity extends SherlockActivity implements TabListener{
 	private int[] counts;
 	private EditText et;
 	private Tab selectTab;
-	
-	private static final int TAB_LIMIT = 3;
+	private String[] labels;
+
+	public static final int TAB_LIMIT = 3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +64,10 @@ public class MainActivity extends SherlockActivity implements TabListener{
 		countMemorys = new ArrayList[TAB_LIMIT];
 		for(int i=0;i<TAB_LIMIT;i++){
 			countMemorys[i] = new ArrayList<Integer>();
-			
+
 		}
 		counts = new int[TAB_LIMIT];
+		labels = new String[TAB_LIMIT];
 
 		ActionBar actionBar = getSupportActionBar();
 		//Tabの表示
@@ -115,7 +117,7 @@ public class MainActivity extends SherlockActivity implements TabListener{
 				return true;
 			}
 		});
-		
+
 		Button clearBtn = (Button)findViewById(R.id.button5);
 		clearBtn.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -127,52 +129,53 @@ public class MainActivity extends SherlockActivity implements TabListener{
 				return true;
 			}
 		});
-		
+
 		//TabをLIMIT分追加
 		for(int i=0;i<TAB_LIMIT;i++){
 			String label = readLabelPref(i);
-			actionBar.addTab(actionBar.newTab().setText(label).setTabListener(this));		
-			
+			labels[i] = label;
+			actionBar.addTab(actionBar.newTab().setText(label).setTabListener(this));
 		}
-		
+
 		readCount();
 		readCountMemory();
-		
+
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.main_menu,menu);
-		
+
 		MenuItem item = menu.findItem(R.id.tab_edit);
 		View v = item.getActionView();
-		
+
 		et = (EditText)v.findViewById(R.id.editText1);
 		et.setFocusable(true);
 		et.setFocusableInTouchMode(true);
 		et.setText(selectTab.getText().toString());
 		et.setOnKeyListener(new View.OnKeyListener() {
-			
+
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				
+
 				if(event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER){
 					Log.d(TAG,"enter!!!!");
 					InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 					inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
 					String label = et.getText().toString();
 					selectTab.setText(label);
+					labels[selectTab.getPosition()] = label;
 					et.clearFocus();
-					
+
 					et.setFocusable(false);
 					return true;
 				}
-				
+
 				return false;
 			}
 		});
 		et.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				v.requestFocus();
@@ -180,10 +183,19 @@ public class MainActivity extends SherlockActivity implements TabListener{
 				et.setFocusableInTouchMode(true);
 			}
 		});
-		
+
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
+	@Override
+	protected void onResume(){
+		super.onResume();
+		if(et != null){
+			et.clearFocus();
+			et.setFocusable(false);
+		}
+	}
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -193,14 +205,19 @@ public class MainActivity extends SherlockActivity implements TabListener{
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		switch (item.getItemId()) {
 		case R.id.setting:
 
 			Intent intent = new Intent(MainActivity.this,MemoryListActivity.class);
-			intent.putExtra("list1", countMemorys[0]);
-			intent.putExtra("list2", countMemorys[1]);
-			intent.putExtra("list3", countMemorys[2]);
+			int total = 0;
+			for(int i=0;i<countMemorys.length;i++){
+				intent.putExtra(getString(R.string.intent_list)+i, countMemorys[i]);
+				intent.putExtra(getString(R.string.intent_label)+i, labels[i]);
+				total += countMemorys[i].size();
+			}
+
+			intent.putExtra(getString(R.string.intent_total), total);
 			startActivity(intent);
 			break;
 		}
@@ -210,43 +227,49 @@ public class MainActivity extends SherlockActivity implements TabListener{
 	private static final String PREF = "TallyCounter";
 	private static final String LABEL = "lable_";
 	private static final String DEFAULT = "No.";
-/*
+	/*
 	private void readPref(int index){
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		int prefCount = (pref.getInt(String.valueOf(index), 0));
 		mCounter.setCount(prefCount);
 		lastCount = prefCount;
 	}
-*/
+	 */
 	private String readLabelPref(int index){
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		String label = pref.getString(LABEL+index, DEFAULT+(index+1));
 		return label;
 	}
-/*
+	/*
 	private void writePref(int index){
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		int count = mCounter.getCount();
 		Editor edit = pref.edit();
 		edit.putInt(String.valueOf(index),count).commit();
 	}
-*/
-	
+	 */
+
 	private void writePrefLables(){
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		Editor edit = pref.edit();
-//		edit.putString(LABEL+selectTab.getPosition(), label).commit();
-		
+		//		edit.putString(LABEL+selectTab.getPosition(), label).commit();
+		/*
 		ActionBar actionBar = getSupportActionBar();
 		for(int i=0;i<actionBar.getTabCount();i++){
 			String label = actionBar.getTabAt(i).getText().toString();
 			edit.putString(LABEL+i, label);
 		}
+		 */
+		for(int i=0;i<TAB_LIMIT;i++){
+			String label = labels[i];
+			edit.putString(LABEL+i, label);
+		}
+
 		edit.commit();
-		
+
 	}
 
-	
+
 	/*jsonにエンコードしてPrefにセット 個々のラストカウントもセット
 	 * [index,count.....]な方式で収容
 	 * prefへのKeyは"index_m"
@@ -256,23 +279,23 @@ public class MainActivity extends SherlockActivity implements TabListener{
 
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		Editor edit = pref.edit();
-		
+
 		for(int i=0;i<TAB_LIMIT;i++){
 			JSONArray jArray = new JSONArray();
 			jArray.put(i);
 			for(int c:countMemorys[i]){
 				jArray.put(c);
 			}
-			
+
 			edit.putString(String.valueOf(i)+M,jArray.toString());
 			Log.d(TAG+"M_WRITE="+i,jArray.toString());
-			
+
 			int count = counts[i];
 			edit.putInt(String.valueOf(i),count);
 		}
-		
+
 		edit.commit();
-		
+
 		/*
 		JSONArray jArray = new JSONArray();
 		jArray.put(index);
@@ -285,60 +308,60 @@ public class MainActivity extends SherlockActivity implements TabListener{
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		Editor edit = pref.edit();
 		edit.putString(String.valueOf(index)+M,jArray.toString()).commit();
-		*/
-		
+		 */
+
 	}
-	
+
 	private void readCount(){
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
 		for(int i=0;i<TAB_LIMIT;i++){
 			int prefCount = (pref.getInt(String.valueOf(i), 0));
 			counts[i] = prefCount;
 		}
-//		mCounter.setCount(prefCount);
-//		lastCount = prefCount;
+		//		mCounter.setCount(prefCount);
+		//		lastCount = prefCount;
 	}
 
 	//jsonからデコードしてListにセット
 	private void readCountMemory(){
 		SharedPreferences pref = getSharedPreferences(PREF, MODE_PRIVATE);
-		
+
 		for(int i=0;i<TAB_LIMIT;i++){
 			String memory = pref.getString(i+M, null);
 			if(memory != null){
-				
+
 				try {
 					JSONArray jArray = new JSONArray(memory);
 					for(int j=1;j<jArray.length();j++){
 						countMemorys[i].add((Integer) jArray.get(j));
 					}
-					
+
 					Log.d(TAG+"M_READ_"+i,jArray.toString());
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				
-		}
+
+			}
 			/*
 		String memory = pref.getString(index+M, null);
 		if(memory != null){
-			
+
 			try {
 				JSONArray jArray = new JSONArray(memory);
 				for(int i=1;i<jArray.length();i++){
 					countMemorys.add((Integer) jArray.get(i));
 				}
-				
+
 				Log.d(TAG+"M_READ",jArray.toString());
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		*/
-		int prefCount = (pref.getInt(String.valueOf(selectTab.getPosition()), 0));
-		mCounter.setCount(prefCount);
-		lastCount = prefCount;
+			 */
+			int prefCount = (pref.getInt(String.valueOf(selectTab.getPosition()), 0));
+			mCounter.setCount(prefCount);
+			lastCount = prefCount;
 		}
 	}
 
@@ -348,15 +371,15 @@ public class MainActivity extends SherlockActivity implements TabListener{
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 
 		selectTab = tab;
-				
+
 		int index = tab.getPosition();
-//		readPref(counts[index]);
+		//		readPref(counts[index]);
 		mCounter.setCount(counts[index]);
-		
+
 		if(et != null)
 			et.setText(tab.getText().toString());
-			
-			
+
+
 		//Drawより先に呼ばれるのでフラグ
 		if(mView.isCreate){
 
@@ -377,8 +400,8 @@ public class MainActivity extends SherlockActivity implements TabListener{
 		}
 		//メモリのクリア
 		countMemorys.clear();
-		*/
-		
+		 */
+
 		int index = tab.getPosition();
 		counts[index] = mCounter.getCount();
 	}
