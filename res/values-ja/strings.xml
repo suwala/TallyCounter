@@ -4,4 +4,7 @@
     <string name="app_name">TallyCounter</string>
     <string name="action_settings">Settings</string>
 
+    
+    <string name="toast_save_dir">"%1$s"へ保存しました</string>
+    
 </resources>

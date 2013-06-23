@@ -391,6 +391,8 @@ int string btn_reset 0x7f09000f
 int string intent_label 0x7f090014
 int string intent_list 0x7f090012
 int string intent_total 0x7f090013
+int string save_dir 0x7f090015
+int string toast_save_dir 0x7f090016
 int style AppBaseTheme 0x7f0a0059
 int style AppTheme 0x7f0a005a
 int style Sherlock___TextAppearance_Small 0x7f0a0046

@@ -1105,6 +1105,8 @@ containing a value of this type.
         public static final int intent_label=0x7f090014;
         public static final int intent_list=0x7f090012;
         public static final int intent_total=0x7f090013;
+        public static final int save_dir=0x7f090015;
+        public static final int toast_save_dir=0x7f090016;
     }
     public static final class style {
         /** 

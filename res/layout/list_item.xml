@@ -8,7 +8,7 @@
         android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/add_btn_stroke"
+        android:layout_marginRight="@dimen/add_bnt_reletive_mergin"
         android:layout_weight="1"
         android:gravity="right"
         android:textSize="26sp" />

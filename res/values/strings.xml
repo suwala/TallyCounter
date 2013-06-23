@@ -10,4 +10,7 @@
 	<string name="intent_list">list</string>
 	<string name="intent_total">total</string>
 	<string name="intent_label">label</string>
+	
+	<string name="save_dir">suwaapp/tallycounter</string>
+	 <string name="toast_save_dir">To save "%1$s"</string>
 </resources>
