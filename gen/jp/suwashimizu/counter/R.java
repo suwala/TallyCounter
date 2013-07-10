@@ -1000,6 +1000,7 @@ containing a value of this type.
         public static final int abs__textButton=0x7f040013;
         public static final int abs__title=0x7f04001b;
         public static final int abs__up=0x7f04000b;
+        public static final int ads=0x7f040036;
         public static final int button1=0x7f040034;
         public static final int button2=0x7f040035;
         public static final int button3=0x7f040037;
@@ -1018,7 +1019,6 @@ containing a value of this type.
         public static final int showTitle=0x7f040007;
         public static final int tabMode=0x7f040003;
         public static final int tab_edit=0x7f04003b;
-        public static final int textView1=0x7f040036;
         public static final int useLogo=0x7f040004;
         public static final int wrap_content=0x7f040000;
     }

@@ -2,6 +2,9 @@ package jp.suwashimizu.counter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import net.nend.android.NendAdView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +20,9 @@ import com.actionbarsherlock.internal.app.ActionBarWrapper;
 import com.actionbarsherlock.internal.app.ActionBarWrapper.TabWrapper;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -55,11 +61,27 @@ public class MainActivity extends SherlockActivity implements TabListener{
 
 	public static final int TAB_LIMIT = 3;
 
+	private AdView adView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setTheme(R.style.Theme_Sherlock_Light);
 		setContentView(R.layout.activity_main);
+
+		//広告領域
+		LinearLayout ads = (LinearLayout)findViewById(R.id.ads);
+
+		//国別で分ける
+		if(Locale.getDefault().equals(Locale.JAPAN)){
+			NendAdView nendView = new NendAdView(getApplicationContext(),71395,"d819dcf91bc6b9ad71706e4ac134bfc7fc4d6c5f");
+			ads.addView(nendView,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+		}else{
+			adView = new AdView(this, AdSize.BANNER,"a151dd61eeda73c");
+			ads.addView(adView);
+			adView.loadAd(new AdRequest());
+		}
+		//
 
 		countMemorys = new ArrayList[TAB_LIMIT];
 		for(int i=0;i<TAB_LIMIT;i++){
@@ -201,6 +223,12 @@ public class MainActivity extends SherlockActivity implements TabListener{
 		super.onPause();
 		writePrefLables();
 		writeCountMemory();
+	}
+
+	@Override
+	public void onDestroy(){
+		adView.destroy();
+		super.onDestroy();
 	}
 
 	@Override
