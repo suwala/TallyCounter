@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TallyCounter</string>
-    <string name="action_settings">Settings</string>
-
-    
+    <string name="app_name">なんちゃって数取器</string>
     <string name="toast_save_dir">"%1$s"へ保存しました</string>
     
 </resources>

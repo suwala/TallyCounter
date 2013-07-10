@@ -9,6 +9,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
@@ -33,6 +34,8 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 	private Rect[] dsts;
 	private Rect[] srcs;
 	private Bitmap backImg;
+	
+	private Matrix mMatrix;
 	
 	public boolean isCreate;
 	
@@ -91,6 +94,16 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 
 			backImg = BitmapFactory.decodeResource(getResources(), R.drawable.rect4006);
 			
+			if(mMatrix == null){
+				mMatrix = new Matrix();
+				int imgW = backImg.getWidth();
+				int viewW = canvas.getWidth();
+				
+				float size = (float)viewW / imgW;
+				
+				mMatrix.setScale(size, size);
+			}
+			
 			
 			float baseY = h/2;
 			FontMetrics fontMetrics = paint.getFontMetrics();
@@ -117,7 +130,8 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 				}
 			}
 			
-			canvas.drawBitmap(backImg,0,0, null);
+//			canvas.drawBitmap(backImg,0,0, null);
+			canvas.drawBitmap(backImg,mMatrix, null);
 			
 			for(int i=0;i<counter.getLength();i++){
 				srcs[i] = new Rect(0, height *10 - height * myCounts[i], drumOneWidth, height *10 -height * myCounts[i] +height);
@@ -299,7 +313,8 @@ public class CounterView extends SurfaceView implements SurfaceHolder.Callback,R
 					}
 					canvas.drawBitmap(drums, srcs[i], dsts[i], null);
 				}
-				canvas.drawBitmap(backImg,0,0, null);
+//				canvas.drawBitmap(backImg,0,0, null);.
+				canvas.drawBitmap(backImg,mMatrix, null);
 				mHolder.unlockCanvasAndPost(canvas);
 			}
 		}
